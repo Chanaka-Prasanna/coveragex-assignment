@@ -6,8 +6,9 @@ import {
   NotFoundError,
   ForbiddenError,
 } from "../errors";
+import { TaskSchema } from "./taskSchema";
 
-export const fetachTasks = async (): Promise<FetchTasksResponse> => {
+export const fetchTasks = async (): Promise<FetchTasksResponse> => {
   try {
     const response = await fetch(URLS.FETCH_TASKS, {
       method: "GET",
@@ -54,8 +55,11 @@ export const fetachTasks = async (): Promise<FetchTasksResponse> => {
 
 export const createTask = async (task: Task) => {
   try {
-    if (!task || !task.title) {
-      throw new ValidationError("Task title is required");
+    // Validate task input using Zod
+    const validation = TaskSchema.safeParse(task);
+    if (!validation.success) {
+      const issues = validation.error.issues.map((i) => i.message).join(", ");
+      throw new ValidationError(`Task validation failed: ${issues}`);
     }
     const response = await fetch(URLS.CREATE_TASK, {
       method: "POST",
@@ -84,7 +88,7 @@ export const createTask = async (task: Task) => {
     }
     const data = await response.json();
     return { success: true, data };
-  } catch (error) {
+  } catch (error: unknown) {
     if (
       error instanceof RequestError ||
       error instanceof ValidationError ||
@@ -105,6 +109,18 @@ export const updateTask = async (task: Partial<Task>) => {
     const { id, ...rest } = task;
     if (!id) {
       throw new ValidationError("Task id is required to update a task");
+    }
+    // Only validate if title or description is present
+    const toValidate: Partial<Pick<Task, "title" | "description">> = {};
+    if (rest.title !== undefined) toValidate.title = rest.title;
+    if (rest.description !== undefined)
+      toValidate.description = rest.description;
+    if (Object.keys(toValidate).length > 0) {
+      const validation = TaskSchema.partial().safeParse(toValidate);
+      if (!validation.success) {
+        const issues = validation.error.issues.map((i) => i.message).join(", ");
+        throw new ValidationError(`Task update validation failed: ${issues}`);
+      }
     }
     const payload = Object.fromEntries(
       Object.entries(rest).filter(([, v]) => v !== undefined)
@@ -141,7 +157,7 @@ export const updateTask = async (task: Partial<Task>) => {
     }
     const data = await response.json();
     return { success: true, data };
-  } catch (error) {
+  } catch (error: unknown) {
     if (
       error instanceof RequestError ||
       error instanceof ValidationError ||

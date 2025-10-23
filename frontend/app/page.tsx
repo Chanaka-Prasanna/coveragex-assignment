@@ -3,14 +3,14 @@
 import { Task } from "@/types";
 import {
   createTask,
-  fetachTasks,
+  fetchTasks,
   updateTask,
   deleteTask,
 } from "@/utils/db/tasks";
 import { v4 as uuidv4 } from "uuid";
 import { useEffect, useState } from "react";
 
-export default function Home() {
+export default function Page() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -22,36 +22,73 @@ export default function Home() {
   const [editDescription, setEditDescription] = useState("");
   const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [titleError, setTitleError] = useState<string>("");
+  const [descriptionError, setDescriptionError] = useState<string>("");
+
+  const validateInputs = () => {
+    let isValid = true;
+    setTitleError("");
+    setDescriptionError("");
+
+    if (!title.trim()) {
+      setTitleError("Title is required");
+      isValid = false;
+    } else if (title.trim().length < 3) {
+      setTitleError("Title must be at least 3 characters");
+      isValid = false;
+    }
+
+    if (!description.trim()) {
+      setDescriptionError("Description is required");
+      isValid = false;
+    } else if (description.trim().length < 15) {
+      setDescriptionError("Description must be at least 15 characters");
+      isValid = false;
+    }
+
+    return isValid;
+  };
 
   const handleAddTask = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (title.trim() && description.trim()) {
+    setErrorMessage("");
+    setTitleError("");
+    setDescriptionError("");
+
+    if (validateInputs()) {
       const newTask: Task = {
         id: uuidv4().toString(),
         title: title.trim(),
         description: description.trim(),
         is_completed: false,
       };
-
       try {
         await createTask(newTask);
         await fetchData();
-      } catch (error) {
+        setTitle("");
+        setDescription("");
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Error creating task.";
+        setErrorMessage(errorMessage);
         console.error("Error creating task:", error);
       }
-      setTitle("");
-      setDescription("");
     }
   };
 
   const handleToggleComplete = async (id: string) => {
+    setErrorMessage("");
     try {
       await updateTask({
         id,
         is_completed: !tasks.find((task) => task.id === id)?.is_completed,
       });
       await fetchData();
-    } catch (error) {
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Error updating task.";
+      setErrorMessage(errorMessage);
       console.error("Error updating task:", error);
     }
   };
@@ -78,9 +115,34 @@ export default function Home() {
     setIsDeleting(false);
   };
 
+  const validateEditInputs = () => {
+    let isValid = true;
+    setTitleError("");
+    setDescriptionError("");
+
+    if (!editTitle.trim()) {
+      setTitleError("Title is required");
+      isValid = false;
+    } else if (editTitle.trim().length < 3) {
+      setTitleError("Title must be at least 3 characters");
+      isValid = false;
+    }
+
+    if (!editDescription.trim()) {
+      setDescriptionError("Description is required");
+      isValid = false;
+    } else if (editDescription.trim().length < 15) {
+      setDescriptionError("Description must be at least 15 characters");
+      isValid = false;
+    }
+
+    return isValid;
+  };
+
   const handleSaveEdit = async () => {
     if (!selectedTask) return;
-    if (!editTitle.trim() || !editDescription.trim()) return;
+    setErrorMessage("");
+    if (!validateEditInputs()) return;
     try {
       setIsSavingEdit(true);
       await updateTask({
@@ -90,7 +152,10 @@ export default function Home() {
       });
       await fetchData();
       closeModals();
-    } catch (error) {
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Error saving task edits.";
+      setErrorMessage(errorMessage);
       console.error("Error saving task edits:", error);
       setIsSavingEdit(false);
     }
@@ -98,24 +163,32 @@ export default function Home() {
 
   const handleConfirmDelete = async () => {
     if (!selectedTask) return;
+    setErrorMessage("");
     try {
       setIsDeleting(true);
       await deleteTask(selectedTask.id);
       await fetchData();
       closeModals();
-    } catch (error) {
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Error deleting task.";
+      setErrorMessage(errorMessage);
       console.error("Error deleting task:", error);
       setIsDeleting(false);
     }
   };
   const fetchData = async () => {
     setIsLoading(true);
+    setErrorMessage("");
     try {
-      const { success, data } = await fetachTasks();
+      const { success, data } = await fetchTasks();
       if (success) {
         setTasks(data.filter((task: Task) => !task.is_completed));
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Error fetching tasks.";
+      setErrorMessage(errorMessage);
       console.error("Error fetching tasks:", error);
     } finally {
       setIsLoading(false);
@@ -128,6 +201,11 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-6 py-12">
+        {errorMessage && (
+          <div className="mb-6 p-3 rounded bg-red-100 text-red-700 border border-red-300">
+            {errorMessage}
+          </div>
+        )}
         <div className="flex justify-center gap-0">
           {/* Left Side - Add Task Form */}
           <div className="w-96 pr-10">
@@ -148,9 +226,14 @@ export default function Home() {
                     id="title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-800 bg-white"
-                    placeholder=""
+                    className={`w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-800 bg-white ${
+                      titleError ? "border-red-500" : "border-gray-300"
+                    }`}
+                    placeholder="Enter task title"
                   />
+                  {titleError && (
+                    <p className="mt-1 text-sm text-red-600">{titleError}</p>
+                  )}
                 </div>
                 <div>
                   <label
@@ -164,9 +247,16 @@ export default function Home() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-800 bg-white resize-y"
-                    placeholder=""
+                    className={`w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-800 bg-white resize-y ${
+                      descriptionError ? "border-red-500" : "border-gray-300"
+                    }`}
+                    placeholder="Enter task description"
                   />
+                  {descriptionError && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {descriptionError}
+                    </p>
+                  )}
                 </div>
                 <div className="flex justify-end pt-4">
                   <button
@@ -204,7 +294,7 @@ export default function Home() {
                       task.is_completed ? "opacity-75" : ""
                     }`}
                   >
-                    <div className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-blue-500/70 to-blue-600/70 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                    <div className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-linear-to-b from-blue-500/70 to-blue-600/70 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <h3
@@ -291,7 +381,7 @@ export default function Home() {
               role="dialog"
               aria-modal="true"
             >
-              <div className="bg-white rounded-lg shadow-lg w-[28rem] max-w-[90vw] p-6">
+              <div className="bg-white rounded-lg shadow-lg w-md max-w-[90vw] p-6">
                 <h2 className="text-lg font-semibold text-gray-800 mb-4">
                   Edit Task
                 </h2>
@@ -308,8 +398,14 @@ export default function Home() {
                       type="text"
                       value={editTitle}
                       onChange={(e) => setEditTitle(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800 bg-white"
+                      className={`w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800 bg-white ${
+                        titleError ? "border-red-500" : "border-gray-300"
+                      }`}
+                      placeholder="Enter task title"
                     />
+                    {titleError && (
+                      <p className="mt-1 text-sm text-red-600">{titleError}</p>
+                    )}
                   </div>
                   <div>
                     <label
@@ -323,8 +419,16 @@ export default function Home() {
                       rows={4}
                       value={editDescription}
                       onChange={(e) => setEditDescription(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800 bg-white resize-y"
+                      className={`w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800 bg-white resize-y ${
+                        descriptionError ? "border-red-500" : "border-gray-300"
+                      }`}
+                      placeholder="Enter task description"
                     />
+                    {descriptionError && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {descriptionError}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="mt-6 flex justify-end gap-3">
@@ -338,11 +442,7 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={handleSaveEdit}
-                    disabled={
-                      isSavingEdit ||
-                      !editTitle.trim() ||
-                      !editDescription.trim()
-                    }
+                    disabled={isSavingEdit}
                     className={`px-4 py-2 rounded text-white ${
                       isSavingEdit
                         ? "bg-blue-400"
