@@ -5,4 +5,6 @@ export const URLS = {
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/tasks/${id}`,
   UPDATE_TASK: (task_id: string) =>
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/tasks/${task_id}`,
+  DELETE_TASK: (task_id: string) =>
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/tasks/${task_id}`,
 };

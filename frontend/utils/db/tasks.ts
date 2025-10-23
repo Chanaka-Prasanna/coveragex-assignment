@@ -77,3 +77,27 @@ export const updateTask = async (task: Partial<Task>) => {
     throw new Error("Failed to update task: Unknown error");
   }
 };
+
+export const deleteTask = async (id: string) => {
+  try {
+    if (!id) {
+      throw new Error("Task id is required to delete a task");
+    }
+    const response = await fetch(`${URLS.DELETE_TASK(id)}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not successful");
+    }
+    return { success: true };
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Failed to delete task: ${error.message}`);
+    }
+    throw new Error("Failed to delete task: Unknown error");
+  }
+};

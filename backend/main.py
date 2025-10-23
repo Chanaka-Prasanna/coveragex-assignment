@@ -71,7 +71,6 @@ allow_headers=["*"],
 class TaskIn(BaseModel):
     title: str
     description: str
-    
 
 class TaskOut(TaskIn):
     id: str
@@ -150,6 +149,19 @@ async def update_task(task_id: str, task: TaskUpdate):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating task: {str(e)}")
 
+@app.delete("/tasks/{task_id}", response_model=dict)
+async def delete_task(task_id: str):
+    try:
+        query = "DELETE FROM tasks WHERE id = :id"
+        result = await database.execute(query, values={"id": task_id})
+        # result is the number of affected rows for aiomysql
+        if result == 0:
+            raise HTTPException(status_code=404, detail="Task not found")
+        return {"status": "ok"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting task: {str(e)}")
 
 @app.get('/')
 async def read_root():
