@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: coveragex
+      MYSQL_USER: cx
+      MYSQL_PASSWORD: cxpass
+      MYSQL_ROOT_PASSWORD: rootpass
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - db_data:/var/lib/mysql
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      # Example DB connection settings the app could read
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: cx
+      DB_PASSWORD: cxpass
+      DB_NAME: coveragex
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+
+volumes:
+  db_data:
