@@ -26,6 +26,7 @@ export function TaskList({
             className="flex justify-center py-10"
             aria-busy="true"
             aria-live="polite"
+            data-testid="loading-spinner"
           >
             <div className="h-10 w-10 rounded-full border-4 border-gray-300 border-t-blue-600 animate-spin" />
           </div>

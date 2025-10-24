@@ -2,7 +2,7 @@
 
 import { Task } from "@/types";
 import { INPUT_LENGTHS } from "@/utils/constants";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 interface TaskFormProps {
   onSubmit: (task: Task) => Promise<void>;
@@ -13,6 +13,10 @@ export function TaskForm({ onSubmit }: TaskFormProps) {
   const [description, setDescription] = useState("");
   const [titleError, setTitleError] = useState<string>("");
   const [descriptionError, setDescriptionError] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // synchronous guard to prevent double submit on rapid clicks
+  const submittingRef = useRef(false);
 
   const validateInputs = () => {
     let isValid = true;
@@ -46,7 +50,17 @@ export function TaskForm({ onSubmit }: TaskFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validateInputs()) {
+
+    // immediate synchronous guard
+    if (submittingRef.current) return;
+
+    if (!validateInputs()) return;
+
+    // set both the ref and state before calling onSubmit
+    submittingRef.current = true;
+    setIsSubmitting(true);
+
+    try {
       const newTask: Task = {
         id: crypto.randomUUID(),
         title: title.trim(),
@@ -56,6 +70,9 @@ export function TaskForm({ onSubmit }: TaskFormProps) {
       await onSubmit(newTask);
       setTitle("");
       setDescription("");
+    } finally {
+      submittingRef.current = false;
+      setIsSubmitting(false);
     }
   };
 
@@ -109,9 +126,12 @@ export function TaskForm({ onSubmit }: TaskFormProps) {
           <div className="flex justify-end pt-4">
             <button
               type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-8 rounded transition-colors"
+              className={`bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-8 rounded transition-colors${
+                isSubmitting ? " opacity-60 cursor-not-allowed" : ""
+              }`}
+              disabled={isSubmitting}
             >
-              Add
+              {isSubmitting ? "Adding..." : "Add"}
             </button>
           </div>
         </form>
