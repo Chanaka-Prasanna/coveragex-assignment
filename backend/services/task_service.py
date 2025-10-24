@@ -2,6 +2,8 @@ from typing import List
 from uuid import uuid4
 from models.task import TaskCreate, TaskUpdate, TaskResponse, TaskInDB
 from repositories.task_repository import TaskRepository
+from fastapi import HTTPException
+
 
 class TaskService:
     def __init__(self, task_repository: TaskRepository):
@@ -20,6 +22,10 @@ class TaskService:
 
     async def create_task(self, task: TaskCreate) -> TaskResponse:
         """Create a new task"""
+        if not task.title or not task.title.strip():
+            raise HTTPException(status_code=422, detail="Title cannot be empty or whitespace")
+        if not task.description or not task.description.strip():
+            raise HTTPException(status_code=422, detail="Description cannot be empty or whitespace")
         task_id = str(uuid4())
         db_task = await self.repository.create(task, task_id)
         return self._to_response(db_task)
@@ -36,6 +42,10 @@ class TaskService:
 
     async def update_task(self, task_id: str, task: TaskUpdate) -> TaskResponse:
         """Update a task"""
+        if task.title is not None and not task.title.strip():
+            raise HTTPException(status_code=422, detail="Title cannot be empty or whitespace")
+        if task.description is not None and not task.description.strip():
+            raise HTTPException(status_code=422, detail="Description cannot be empty or whitespace")
         updated_task = await self.repository.update(task_id, task)
         return self._to_response(updated_task)
 
