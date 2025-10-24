@@ -4,3 +4,4 @@ aiomysql
 databases
 cryptography
 python-dotenv
+pydantic-settings

@@ -8,3 +8,8 @@ export const URLS = {
   DELETE_TASK: (task_id: string) =>
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/tasks/${task_id}`,
 };
+
+export const INPUT_LENGTHS = {
+  MIN_TITLE_LENGTH: 3,
+  MIN_DESCRIPTION_LENGTH: 5,
+};
