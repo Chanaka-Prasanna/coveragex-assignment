@@ -1,9 +1,9 @@
 
 import unittest
 from unittest.mock import AsyncMock
-from backend.services.task_service import TaskService
-from backend.repositories.task_repository import TaskRepository
-from backend.models.task import TaskCreate, TaskUpdate
+from services.task_service import TaskService
+from repositories.task_repository import TaskRepository
+from models.task import TaskCreate, TaskUpdate
 
 class TestTaskService(unittest.IsolatedAsyncioTestCase):
     async def test_create_task(self):

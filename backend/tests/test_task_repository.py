@@ -1,9 +1,9 @@
 
 import unittest
 from unittest.mock import AsyncMock
-from backend.repositories.task_repository import TaskRepository
-from backend.services.database import DatabaseService
-from backend.models.task import TaskCreate
+from repositories.task_repository import TaskRepository
+from services.database import DatabaseService
+from models.task import TaskCreate
 
 class TestTaskRepository(unittest.IsolatedAsyncioTestCase):
     async def test_create_and_get_by_id(self):

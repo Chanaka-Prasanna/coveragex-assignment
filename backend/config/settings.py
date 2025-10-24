@@ -1,14 +1,18 @@
 from pydantic_settings import BaseSettings
 from functools import lru_cache
+import os
+from dotenv import load_dotenv
+
+# load_dotenv()
 
 class Settings(BaseSettings):
     """Application settings"""
-    # Database settings
-    db_user: str = "cx"
-    db_password: str = "cxpass"
-    db_host: str = "localhost"
-    db_port: str = "3307"
-    db_name: str = "coveragex"
+    # Database settings if you run without docker
+    db_user: str
+    db_password: str 
+    db_host: str 
+    db_port: str
+    db_name: str
 
     # CORS settings
     cors_origins: list[str] = ["*"]

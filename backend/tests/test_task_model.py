@@ -1,6 +1,6 @@
 
 import unittest
-from backend.models.task import TaskCreate, TaskUpdate, TaskInDB, TaskResponse
+from models.task import TaskCreate, TaskUpdate, TaskInDB, TaskResponse
 from datetime import datetime
 
 class TestTaskModel(unittest.TestCase):
