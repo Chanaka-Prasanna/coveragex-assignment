@@ -48,7 +48,7 @@ A full-stack to-do task management app built for the CoverageX assessment. Users
 
 ### Frontend Testing with Docker
 
-1. **Open a new terminal** and run:
+1. **Open a new terminal in the project root** and run:
 
    ```bash
    docker compose exec frontend sh
@@ -61,7 +61,7 @@ A full-stack to-do task management app built for the CoverageX assessment. Users
 
 ### Backend Testing with Docker
 
-1. **Open a new terminal** and run:
+1. **Open a new terminal in the project root** and run:
 
    ```bash
    docker compose exec backend sh
