@@ -1,6 +1,6 @@
 "use client";
 
-import { Task } from "@/types";
+import { Task, TaskCreate } from "@/types";
 import { useState } from "react";
 import { ITaskService } from "../services/TaskService";
 
@@ -27,7 +27,7 @@ export function useTaskManager(taskService: ITaskService) {
     }
   };
 
-  const createTask = async (task: Task) => {
+  const createTask = async (task: TaskCreate) => {
     setErrorMessage("");
     try {
       await taskService.createTask(task);

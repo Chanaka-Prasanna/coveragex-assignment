@@ -1,4 +1,4 @@
-import { FetchTasksResponse, Task } from "@/types";
+import { FetchTasksResponse, Task, TaskCreate } from "@/types";
 import { URLS } from "@/utils/constants";
 import {
   RequestError,
@@ -10,7 +10,7 @@ import { TaskSchema } from "./schemas/taskSchema";
 
 export interface ITaskService {
   fetchTasks(): Promise<FetchTasksResponse>;
-  createTask(task: Task): Promise<{ success: boolean; data: Task }>;
+  createTask(task: TaskCreate): Promise<{ success: boolean; data: Task }>;
   updateTask(task: Partial<Task>): Promise<{ success: boolean; data: Task }>;
   deleteTask(id: string): Promise<{ success: boolean }>;
 }

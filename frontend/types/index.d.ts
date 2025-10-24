@@ -1,13 +1,16 @@
 export interface Task {
-  id: string;
+  id: string; // Add id as required
   title: string;
   description: string;
   is_completed: boolean;
-}
-
-export interface TaskDoc extends Task {
   created_at?: string;
   updated_at?: string;
+}
+
+export interface TaskCreate {
+  title: string;
+  description: string;
+  is_completed: boolean;
 }
 
 export interface FetchTasksResponse {

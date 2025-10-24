@@ -4,3 +4,4 @@ databases
 python-dotenv
 pydantic-settings
 cryptography
+pytest

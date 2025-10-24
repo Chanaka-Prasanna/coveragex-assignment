@@ -36,8 +36,11 @@ services:
   frontend:
     build:
       context: ./frontend
+      target: dev
+      args:
+        NEXT_PUBLIC_BACKEND_URL: http://localhost:8000
     environment:
-      NEXT_PUBLIC_BACKEND_URL: http://backend:8000
+      NEXT_PUBLIC_BACKEND_URL: http://localhost:8000
     depends_on:
       - backend
     ports:

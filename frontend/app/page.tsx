@@ -1,6 +1,6 @@
 "use client";
 
-import { Task } from "@/types";
+import { Task, TaskCreate } from "@/types";
 import { useEffect, useState } from "react";
 import { TaskForm } from "./components/TaskForm";
 import { TaskList } from "./components/TaskList";
@@ -29,7 +29,7 @@ export default function Page() {
   const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleAddTask = async (task: Task) => {
+  const handleAddTask = async (task: TaskCreate) => {
     await createTask(task);
   };
 

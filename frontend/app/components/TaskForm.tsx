@@ -1,11 +1,11 @@
 "use client";
 
-import { Task } from "@/types";
+import { TaskCreate } from "@/types";
 import { INPUT_LENGTHS } from "@/utils/constants";
 import { useState, useRef } from "react";
 
 interface TaskFormProps {
-  onSubmit: (task: Task) => Promise<void>;
+  onSubmit: (task: TaskCreate) => Promise<void>;
 }
 
 export function TaskForm({ onSubmit }: TaskFormProps) {
@@ -61,8 +61,7 @@ export function TaskForm({ onSubmit }: TaskFormProps) {
     setIsSubmitting(true);
 
     try {
-      const newTask: Task = {
-        id: crypto.randomUUID(),
+      const newTask: TaskCreate = {
         title: title.trim(),
         description: description.trim(),
         is_completed: false,

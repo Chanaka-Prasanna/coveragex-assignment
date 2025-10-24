@@ -17,7 +17,7 @@ A full-stack to-do task management app built for the CoverageX assessment. Users
 
 ## Prerequisites
 
-- Makesure that docker is being running in your machine (Open the docker app)
+- Makesure that docker is being running in your machine (Open the docker)
 
 ---
 
@@ -44,68 +44,47 @@ A full-stack to-do task management app built for the CoverageX assessment. Users
 
 ---
 
-## Backend Test Guidance
+## Testing with Docker
 
-### Running All Tests
+### Frontend Testing with Docker
 
-1. Navigate to the backend directory:
-   ```powershell
-   cd backend
-   ```
-2. Set the `PYTHONPATH` to the backend root:
-   - **PowerShell:**
-     ```powershell
-     $env:PYTHONPATH="."
-     ```
-   - **Command Prompt (cmd):**
-     ```cmd
-     set PYTHONPATH=.
-     ```
-3. Run all tests:
-   ```powershell
-   pytest tests
+1. **Open a new terminal** and run:
+
+   ```bash
+   docker compose exec frontend sh
    ```
 
-### Running Individual Test Files
-
-You can run a specific test file using:
-
-```powershell
-python -m tests.test_integration
-python -m tests.test_task_model
-python -m tests.test_task_repository
-python -m tests.test_task_service
-```
-
-### Notes
-
-- Make sure your environment variables and dependencies are set up before running tests.
-- For code coverage, use:
-  ```powershell
-  pytest --cov
-  ```
-
----
-
-## Frontend Test Guidance
-
-1. Navigate to the frontend directory:
-   ```powershell
-   cd frontend
-   ```
-2. Install dependencies (if not already done):
-   ```powershell
-   npm install
-   ```
-3. Run all frontend tests:
-   ```powershell
+2. **Inside the container, run the tests:**
+   ```bash
    npm test
    ```
 
+### Backend Testing with Docker
+
+1. **Open a new terminal** and run:
+
+   ```bash
+   docker compose exec backend sh
+   ```
+
+2. **Run all test suites:**
+
+   ```bash
+   pytest tests
+   ```
+
+3. **Run individual test files:**
+   ```bash
+   python -m tests.test_integration
+   python -m tests.test_task_model
+   python -m tests.test_task_repository
+   python -m tests.test_task_service
+   ```
+
 ### Notes
 
-- Make sure your dependencies are installed before running tests.
-- For more advanced test options, see the frontend's test documentation or package.json scripts.
+- Make sure all services are running (`docker compose up`) before executing tests in containers.
+- The Docker containers are configured with the necessary dependencies and environment variables for testing.
 
 ---
 
