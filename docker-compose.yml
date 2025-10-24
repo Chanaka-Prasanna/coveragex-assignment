@@ -22,7 +22,6 @@ services:
     build:
       context: ./backend
     environment:
-      # Example DB connection settings the app could read
       DB_HOST: db
       DB_PORT: 3306
       DB_USER: cx
@@ -37,6 +36,8 @@ services:
   frontend:
     build:
       context: ./frontend
+    environment:
+      NEXT_PUBLIC_BACKEND_URL: http://backend:8000
     depends_on:
       - backend
     ports:

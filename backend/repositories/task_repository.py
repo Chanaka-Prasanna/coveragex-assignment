@@ -42,7 +42,7 @@ class TaskRepository:
 
     async def update(self, task_id: str, task: TaskUpdate) -> TaskInDB:
         """Update a task"""
-        fields = {k: v for k, v in task.dict().items() if v is not None}
+        fields = {k: v for k, v in task.model_dump().items() if v is not None}
         if not fields:
             raise HTTPException(status_code=400, detail="No fields to update")
 

@@ -8,10 +8,13 @@ WORKDIR /app
 
 # Install system deps (none needed for now)
 
+# Upgrade pip first
+RUN pip install --upgrade pip --timeout 1000
+
 # Install Python dependencies first for better caching
 COPY requirements.txt ./
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
+RUN pip install -r requirements.txt
+    
 
 # Copy application code
 COPY . .

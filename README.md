@@ -17,7 +17,7 @@ A full-stack to-do task management app built for the CoverageX assessment. Users
 
 ## Prerequisites
 
-- Makesure you have installed docker in your machine
+- Makesure that docker is being running in your machine (Open the docker app)
 
 ---
 
@@ -44,63 +44,68 @@ A full-stack to-do task management app built for the CoverageX assessment. Users
 
 ---
 
-## Backend Setup (Manual)
+## Backend Test Guidance
 
-1. **set these vaiable values in** `backend/.env`
+### Running All Tests
 
-```bash
-DB_USER=cx
-DB_PASSWORD=cxpass
-DB_HOST=localhost
-DB_PORT=3307
-DB_NAME=coveragex
+1. Navigate to the backend directory:
+   ```powershell
+   cd backend
+   ```
+2. Set the `PYTHONPATH` to the backend root:
+   - **PowerShell:**
+     ```powershell
+     $env:PYTHONPATH="."
+     ```
+   - **Command Prompt (cmd):**
+     ```cmd
+     set PYTHONPATH=.
+     ```
+3. Run all tests:
+   ```powershell
+   pytest tests
+   ```
+
+### Running Individual Test Files
+
+You can run a specific test file using:
+
+```powershell
+python -m tests.test_integration
+python -m tests.test_task_model
+python -m tests.test_task_repository
+python -m tests.test_task_service
 ```
 
-2. **Install dependencies:**
-   ```sh
-   cd backend
-   pip install -r requirements.txt
-   ```
-3. **Run the backend server:**
-   ```sh
-   uvicorn main:app --reload
-   ```
-4. **API docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
+### Notes
+
+- Make sure your environment variables and dependencies are set up before running tests.
+- For code coverage, use:
+  ```powershell
+  pytest --cov
+  ```
 
 ---
 
-## Frontend Setup (Manual)
+## Frontend Test Guidance
 
-1. **Install dependencies:**
-   ```sh
+1. Navigate to the frontend directory:
+   ```powershell
    cd frontend
+   ```
+2. Install dependencies (if not already done):
+   ```powershell
    npm install
    ```
-2. **Run the frontend app:**
-   ```sh
-   npm run dev
+3. Run all frontend tests:
+   ```powershell
+   npm test
    ```
-3. **Open:** [http://localhost:3000](http://localhost:3000)
 
----
+### Notes
 
-## Running Tests
-
-### Backend
-
-- **Unit & Integration Tests:**
-  ```sh
-  cd backend
-  pytest
-  ```
-
-### Frontend
-
-- **Unit Tests:**
-  ```sh
-  cd frontend
-  npm test
-  ```
+- Make sure your dependencies are installed before running tests.
+- For more advanced test options, see the frontend's test documentation or package.json scripts.
 
 ---
 

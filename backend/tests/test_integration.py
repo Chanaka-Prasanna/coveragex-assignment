@@ -1,9 +1,14 @@
 import unittest
+import warnings
 from fastapi.testclient import TestClient
 from main import app
 
 
 class TestIntegration(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        # Suppress aiomysql 'Table already exists' warning
+        warnings.filterwarnings("ignore", message="Table 'tasks' already exists", category=Warning)
     @classmethod
     def setUpClass(cls):
         # Use TestClient as context manager to trigger lifespan events

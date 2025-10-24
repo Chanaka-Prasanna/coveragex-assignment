@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, Field
+from pydantic import ConfigDict
 
 class TaskBase(BaseModel):
     """Base Task model with common attributes"""
@@ -31,5 +32,4 @@ class TaskResponse(TaskBase):
     created_at: Optional[str] = None
     updated_at: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config: ConfigDict = ConfigDict(from_attributes=True)

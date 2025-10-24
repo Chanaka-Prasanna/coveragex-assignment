@@ -1,7 +1,6 @@
 fastapi[standard]
-sqlalchemy
 aiomysql
 databases
-cryptography
 python-dotenv
 pydantic-settings
+cryptography
